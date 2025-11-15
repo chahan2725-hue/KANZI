@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自由に動く漢字</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #111;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .kanji {
+        position: absolute;
+        color: #00ffff;
+        font-weight: bold;
+        user-select: none;
+        cursor: pointer;
+        text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+        transition: transform 0.3s, color 0.3s;
+    }
+
+    .kanji:hover {
+        transform: scale(1.5) rotate(20deg);
+        color: #ff00ff;
+    }
+</style>
+</head>
+<body>
+
+<script>
+    const kanjis = ["夢","力","炎","空","風","龍","心","光","影","雷"];
+    const count = 25; // 漢字の数
+    const kanjiElements = [];
+
+    for(let i=0; i<count; i++) {
+        const div = document.createElement("div");
+        div.className = "kanji";
+        div.innerText = kanjis[Math.floor(Math.random() * kanjis.length)];
+        div.style.left = Math.random() * window.innerWidth + "px";
+        div.style.top = Math.random() * window.innerHeight + "px";
+        div.style.fontSize = (30 + Math.random() * 60) + "px";
+
+        // ランダムな速度と方向
+        const speedX = (Math.random() - 0.5) * 2; // -1 ~ 1
+        const speedY = (Math.random() - 0.5) * 2; // -1 ~ 1
+        kanjiElements.push({el: div, vx: speedX, vy: speedY});
+
+        document.body.appendChild(div);
+
+        // クリックで消える
+        div.addEventListener("click", () => {
+            div.style.color = "#ff0000";
+            div.style.transform = "scale(0)";
+            setTimeout(() => div.remove(), 300);
+        });
+    }
+
+    function animate() {
+        kanjiElements.forEach(obj => {
+            let x = parseFloat(obj.el.style.left);
+            let y = parseFloat(obj.el.style.top);
+
+            x += obj.vx;
+            y += obj.vy;
+
+            // 画面端で跳ね返る
+            if(x < 0 || x > window.innerWidth - obj.el.offsetWidth) obj.vx *= -1;
+            if(y < 0 || y > window.innerHeight - obj.el.offsetHeight) obj.vy *= -1;
+
+            obj.el.style.left = x + "px";
+            obj.el.style.top = y + "px";
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+
+</body>
+</html>
